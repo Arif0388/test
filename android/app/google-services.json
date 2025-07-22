@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "245320781931",
+    "project_id": "learningx-fcm",
+    "storage_bucket": "learningx-fcm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245320781931:android:3ae9e1c5feed31f9c4e12e",
+        "android_client_info": {
+          "package_name": "in.learningx.club_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJFE402ENZV2Tnfosd7IthG5axKI_ITmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245320781931:android:5995da4e508613c3c4e12e",
+        "android_client_info": {
+          "package_name": "in.learningx.flutterApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJFE402ENZV2Tnfosd7IthG5axKI_ITmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
