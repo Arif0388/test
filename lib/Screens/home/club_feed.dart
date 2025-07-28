@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:learningx_flutter_app/Screens/club/blue_club_item.dart';
 import 'package:learningx_flutter_app/Screens/club/club_item.dart';
-import 'package:learningx_flutter_app/Screens/club/form/club_form1.dart';
 import 'package:learningx_flutter_app/Screens/home/campus_ambassador_card.dart';
 import 'package:learningx_flutter_app/Screens/home/empty_club_feed.dart';
 import 'package:learningx_flutter_app/api/model/club_model.dart';
@@ -135,8 +134,8 @@ class _ClubsScreenState extends ConsumerState<ClubsScreen> {
                         const SizedBox(width: 16),
                         Expanded(child: _buildFragmentButtons('Joined', 0)),
                         const SizedBox(width: 16),
-                        Expanded(child: _buildFragmentButtons('All', 1)),
-                        const SizedBox(width: 16),
+                        // Expanded(child: _buildFragmentButtons('All', 1)),
+                        // const SizedBox(width: 16),
                       ],
                     ),
                   )),
@@ -203,20 +202,22 @@ class _ClubsScreenState extends ConsumerState<ClubsScreen> {
                 ],
               ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 56, 114, 220),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ClubForm1Activity(
-                collegeId: isCollegeAdmin ? _collegeId : null,
-              ),
-            ),
-          );
-        },
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: const Color.fromARGB(255, 56, 114, 220),
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => ClubForm1Activity(
+      //           collegeId: isCollegeAdmin ? _collegeId : null,
+      //         ),
+      //       ),
+      //     );
+      //   },
+      //   child: const Icon(Icons.abc_rounded, color: Colors.white),
+      // ),
+
     );
   }
 
@@ -261,4 +262,5 @@ class _ClubsScreenState extends ConsumerState<ClubsScreen> {
             child: Text(text),
           );
   }
+
 }

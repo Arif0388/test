@@ -40,7 +40,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:universal_html/html.dart' as html;
 import 'Screens/home/splash_screen.dart';
-import 'Screens/profile/profile_screen.dart';
+
 
 //flutter run -d chrome --web-hostname localhost --web-port 7357
 
@@ -121,10 +121,6 @@ class _MyAppState extends State<MyApp> {
     final router = GoRouter(
       initialLocation: "/",
       routes: [
-        GoRoute(
-          path: '/profile2/:id',
-          builder: (context, state) => ProfileScreen(id: state.pathParameters['id']!),
-        ),
         GoRoute(
           path: '/',
           builder: (context, state) => const SplashScreen(),

@@ -384,11 +384,21 @@
 //   }
 // }
 
+import 'dart:collection';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:learningx_flutter_app/Screens/club/form/set_up_channels.dart';
+
+import '../../../api/common/image_cropper.dart';
+import '../../../api/model/club_model.dart';
+import '../../../api/model/uploaded_file_model.dart';
+import '../../../api/provider/club_feed_provider.dart';
+import '../../../api/provider/club_provider.dart';
+import '../../../api/provider/upload_file_provider.dart';
+import 'club_form2.dart';
 
 class ClubForm1Activity extends ConsumerStatefulWidget {
   final String? clubId;
@@ -403,23 +413,38 @@ class ClubForm1Activity extends ConsumerStatefulWidget {
 
 class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
   final formKey = GlobalKey<FormState>();
-
-  File? selectedImage;
+  final String _selectedCategory = 'Arts & Culture';
+  final List<String> _categories = [
+    'Arts & Culture',
+    'Management',
+    'Science & Technology',
+    'Sports',
+    'Social'
+  ];
+  File? _image;
+  XFile? _selectedFile;
   DateTime? startDate;
   DateTime? endDate;
   bool isOnline = false;
+  String clubImg =
+      "https://learningx-s3.s3.ap-south-1.amazonaws.com/CvW3AqVxR-image.png";
+  var privacy = "private";
+  bool isAdminChannelRequired = true;
+  String _collegeId = "";
 
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final linkController = TextEditingController();
 
-  Future<void> pickImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() {
-        selectedImage = File(picked.path);
-      });
-    }
+  void addImageBtnClicked() async {
+    final pickedFile =
+    await ImagePicker().pickImage(source: ImageSource.gallery);
+    File? image =
+    await ImageCropperPage.cropImage(context, File(pickedFile!.path), 1, 1);
+    setState(() {
+      _image = image;
+      _selectedFile = pickedFile;
+    });
   }
 
   Future<void> pickDate({required bool isStart}) async {
@@ -440,9 +465,69 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
     }
   }
 
+  void nextBtnClicked() async {
+    if (titleController.text.isEmpty || descriptionController.text.isEmpty || linkController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("* field is required!")),
+      );
+    } else {
+      Map<String, dynamic> data = HashMap();
+      if (_image != null) {
+        List<UploadedFileModel> results = await UploadFileProvider.uploadImage(
+            _selectedFile!.name, [_image!], true);
+        data['clubImg'] = results[0].location;
+      }
+      data['clubName'] = titleController.text;
+      data['clubLink'] = linkController.text;
+      // data['email'] = emailController.text;
+      data['description'] = descriptionController.text;
+      data['category'] = _selectedCategory;
+      data['privacy'] = privacy;
+      if (privacy == "public") {
+        data['college'] = _collegeId;
+      } else {
+        data['college'] = null;
+      }
+      if (widget.collegeId != null && privacy == "public") {
+        data['college_status'] = "verified";
+        data['college'] = widget.collegeId;
+      }
+      if (widget.councilId != null) {
+        data['council'] = widget.councilId;
+      }
+      if (widget.clubId != null) {
+        data['_id'] = widget.clubId;
+        await ref
+            .read(selectedClubProvider(widget.clubId!).notifier)
+            .updateClubApi(context, data);
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ClubForm2Activity(
+                clubId: widget.clubId!,
+                isNewClub: false,
+              )),
+        );
+      } else {
+        data['isAdminChannelRequired'] = isAdminChannelRequired;
+        ClubItem newClub = await createClubApi(context, data);
+        ref.read(yourClubFeedProvider.notifier).addClub(newClub);
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SetUpChannelsPage(
+                clubItem: newClub,
+              )),
+        );
+      }
+    }
+  }
+
   void submitForm() {
     if (formKey.currentState!.validate()) {
-      if (selectedImage == null) {
+      if (_selectedFile == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Please upload an image")),
         );
@@ -480,7 +565,7 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
           child: Column(
             children: [
               GestureDetector(
-                onTap: pickImage,
+                onTap: addImageBtnClicked,
                 child: Container(
                   height: 150,
                   decoration: BoxDecoration(
@@ -491,7 +576,7 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
-                    child: selectedImage == null
+                    child: _selectedFile == null
                         ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -507,7 +592,7 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
                         : ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.file(
-                        selectedImage!,
+                        _image!,
                         fit: BoxFit.cover,
                         width: double.infinity,
                       ),
@@ -521,7 +606,7 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
                 highlightColor:Colors.transparent,
                 hoverColor: Colors.transparent,
                 splashColor:Colors.transparent,
-                onTap:pickImage,
+                onTap:addImageBtnClicked,
                 child: Row(
                   mainAxisAlignment:MainAxisAlignment.center,
                   children: [
@@ -582,10 +667,10 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
                         child: TextFormField(
                           decoration: InputDecoration(
                             labelStyle:GoogleFonts.poppins(fontSize:17,fontWeight:FontWeight.w400,color:const Color(0xffC3C3C3)),
-                            labelText: 'Start Date',
+                            // labelText: 'Start Date',
                             border: const OutlineInputBorder(),
                             hintText: startDate == null
-                                ? "12.05.2025"
+                                ? "Start Date"
                                 : "${startDate!.day.toString().padLeft(2, '0')}.${startDate!.month.toString().padLeft(2, '0')}.${startDate!.year}",
                           ),
                         ),
@@ -600,10 +685,10 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
                         child: TextFormField(
                           decoration: InputDecoration(
                             labelStyle:GoogleFonts.poppins(fontSize:17,fontWeight:FontWeight.w400,color:const Color(0xffC3C3C3)),
-                            labelText: 'End Date',
+                            // labelText: 'End Date',
                             border: const OutlineInputBorder(),
                             hintText: endDate == null
-                                ? "12.06.2025"
+                                ? "End Date"
                                 : "${endDate!.day.toString().padLeft(2, '0')}.${endDate!.month.toString().padLeft(2, '0')}.${endDate!.year}",
                           ),
                         ),
@@ -615,7 +700,7 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
               const SizedBox(height:14),
               Row(
                 children: [
-                  Text("Mode", style: GoogleFonts.poppins(fontSize:15,color:Color(0xff828282),fontWeight: FontWeight.w400)),
+                  Text("Mode", style: GoogleFonts.poppins(fontSize:15,color:const Color(0xff828282),fontWeight: FontWeight.w400)),
                 ],
               ),
               const SizedBox(width: 20),
@@ -663,7 +748,7 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: submitForm,
+                    onPressed:nextBtnClicked,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF007BFF),
                       shape: RoundedRectangleBorder(

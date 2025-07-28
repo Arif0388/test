@@ -1011,7 +1011,7 @@ class EventInfoActivity extends ConsumerStatefulWidget {
 }
 
 class _EventInfoActivity extends ConsumerState<EventInfoActivity> {
-  bool isRegistered = false;
+  bool isRegistered = false ;
   bool isReistrationOpen = true;
   var isAdmin = false;
   var isAuthenticated = false;
@@ -1667,49 +1667,78 @@ class _EventInfoActivity extends ConsumerState<EventInfoActivity> {
               ],
             ),
           ),
-          floatingActionButton:FloatingActionButton(
-            backgroundColor:Colors.blueGrey,
-            onPressed:(){},
-            child:const Icon(Icons.message,color:Colors.white,),
-          ),
           bottomNavigationBar:isReistrationOpen?
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: const Color(0xffFEFEFE),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () {
+          Row(
+            mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: SizedBox(
+                  width:MediaQuery.of(context).size.width/1.3,
+                  height:55,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor:Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () {
 
-              },
-              child:  Text(
-                "Register Now",
-                  style:GoogleFonts.nunito(fontWeight:FontWeight.w700,fontSize:20,color:Colors.white)
-              )
-              ),
-            ) :
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: const Color(0xffAFAFAF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    },
+                    child:  Text(
+                      "Register Now",
+                        style:GoogleFonts.nunito(fontWeight:FontWeight.w700,fontSize:20,color:Colors.white)
+                    )
+                    ),
+                ),
+                ),
+              Container(
+                  width:50,
+                  height:50,
+                  decoration:BoxDecoration(
+                    borderRadius:BorderRadius.circular(10),
+                    color:Colors.blueGrey,
+                  ),
+                  child: const Center(child: Icon(Icons.message,color:Colors.white ,))),
+            ],
+          ) :
+          Row(
+            mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SizedBox(
+                  width:MediaQuery.of(context).size.width/1.3,
+                  height:50,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: const Color(0xffAFAFAF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+
+                      },
+                      child:  Text(
+                          "Register Closed",
+                          style:GoogleFonts.nunito(fontWeight:FontWeight.w700,fontSize:18,color:const Color(0xffFEFEFE))
+                      )
                   ),
                 ),
-                onPressed: () {
-
-                },
-                child:  Text(
-                    "Register Closed",
-                    style:GoogleFonts.nunito(fontWeight:FontWeight.w700,fontSize:20,color:const Color(0xffFEFEFE))
-                )
-            ),
+              ),
+              Container(
+                  width:50,
+                  height:50,
+                 decoration:BoxDecoration(
+                   borderRadius:BorderRadius.circular(10),
+                   color:Colors.blueGrey,
+                 ),
+                  child: const Center(child: Icon(Icons.message,color:Colors.white,))),
+            ],
           ) ,
         );
       },
@@ -1742,10 +1771,6 @@ class _EventInfoActivity extends ConsumerState<EventInfoActivity> {
                           },
                           child: const Text("Go to Home"))
                     ])),
-          floatingActionButton:FloatingActionButton(
-              onPressed:(){},
-              child:const Icon(FontAwesomeIcons.message),
-          ),
         );
       },
     );
@@ -1860,7 +1885,7 @@ Widget PrizeBox({required IconData icon,required Color backgroundColor,required 
                 borderRadius:BorderRadius.circular(10),
                 color:iconBgcolor
             ),
-            child: Icon(icon, size: 28, color: Color(0xffFFFFFF))),
+            child: Icon(icon, size: 28, color: const Color(0xffFFFFFF))),
         const SizedBox(height: 8),
         Text(
           title,

@@ -15,6 +15,7 @@ import 'package:learningx_flutter_app/api/model/user_modal.dart';
 import 'package:learningx_flutter_app/api/provider/chat_provider.dart';
 import 'package:learningx_flutter_app/api/provider/chat_room_provider.dart';
 import 'package:learningx_flutter_app/api/utils/utils.dart';
+import 'package:learningx_flutter_app/Screens/profile/profile_page.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatActivity extends ConsumerStatefulWidget {
@@ -25,10 +26,10 @@ class ChatActivity extends ConsumerStatefulWidget {
 
   const ChatActivity(
       {super.key,
-      required this.chatRoom,
-      required this.receiverAtIndex,
-      required this.senderAtIndex,
-      this.chat});
+        required this.chatRoom,
+        required this.receiverAtIndex,
+        required this.senderAtIndex,
+        this.chat});
 
   @override
   ConsumerState<ChatActivity> createState() => _ChatActivityState();
@@ -249,11 +250,11 @@ class _ChatActivityState extends ConsumerState<ChatActivity> {
   Future<void> updateChatRoom() async {
     setState(() {
       final updatedBlockedBy =
-          currentChatRoom.blockedBy!.contains(_currentUserId)
-              ? (List<String>.from(currentChatRoom.blockedBy!)
-                ..remove(_currentUserId))
-              : (List<String>.from(currentChatRoom.blockedBy!)
-                ..add(_currentUserId));
+      currentChatRoom.blockedBy!.contains(_currentUserId)
+          ? (List<String>.from(currentChatRoom.blockedBy!)
+        ..remove(_currentUserId))
+          : (List<String>.from(currentChatRoom.blockedBy!)
+        ..add(_currentUserId));
       currentChatRoom.blockedBy = updatedBlockedBy;
       Map<String, dynamic> map = HashMap();
       map['_id'] = currentChatRoom.id;
@@ -288,21 +289,39 @@ class _ChatActivityState extends ConsumerState<ChatActivity> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Flexible(
-              child: Text(
-                currentChatRoom.users[widget.receiverAtIndex].displayName,
+        title: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileActivity(
+                  id: currentChatRoom.users[widget.receiverAtIndex].id,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            if (currentChatRoom.users[widget.receiverAtIndex].verified)
-              const Icon(
-                Icons.verified_outlined,
-                size: 15,
-                color: Colors.blue,
+            );
+          },
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(
+                  currentChatRoom.users[widget.receiverAtIndex].userImg,
+                ),
               ),
-          ],
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  currentChatRoom.users[widget.receiverAtIndex].displayName,
+                ),
+              ),
+              const SizedBox(width: 8),
+              if (currentChatRoom.users[widget.receiverAtIndex].verified)
+                const Icon(
+                  Icons.verified_outlined,
+                  size: 15,
+                  color: Colors.blue,
+                ),
+            ],
+          ),
         ),
         backgroundColor: const Color.fromARGB(255, 211, 232, 255),
         titleTextStyle: const TextStyle(color: Colors.black, fontSize: 18),
@@ -312,44 +331,44 @@ class _ChatActivityState extends ConsumerState<ChatActivity> {
         children: [
           Expanded(
               child: Center(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : chats.isEmpty
+                child: isLoading
+                    ? const CircularProgressIndicator()
+                    : chats.isEmpty
                     ? const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(
-                          child: Text(
-                            'No chats available',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      )
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Text(
+                      'No chats available',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                )
                     : ListView.builder(
-                        key: const PageStorageKey<String>('chatList'),
-                        controller: _scrollController,
-                        reverse: true,
-                        padding: const EdgeInsets.all(12),
-                        itemCount: chats.length + (isLoading ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == chats.length) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10),
-                              child: Center(child: CircularProgressIndicator()),
-                            );
-                          }
-                          final currentMillis = chats[index].createdAtDate;
-                          final nextMillis = index < chats.length - 1
-                              ? chats[index + 1].createdAtDate
-                              : null;
-                          bool showDate = nextMillis == null ||
-                              !Utils.isSameDay(currentMillis, nextMillis);
-                          Chat chat = chats[index];
-                          bool isSelf = chat.sender.id == _currentUserId;
-                          return ChatItemWidget(
-                              chat: chat, showDate: showDate, isSelf: isSelf);
-                        },
-                      ),
-          )),
+                  key: const PageStorageKey<String>('chatList'),
+                  controller: _scrollController,
+                  reverse: true,
+                  padding: const EdgeInsets.all(12),
+                  itemCount: chats.length + (isLoading ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == chats.length) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    final currentMillis = chats[index].createdAtDate;
+                    final nextMillis = index < chats.length - 1
+                        ? chats[index + 1].createdAtDate
+                        : null;
+                    bool showDate = nextMillis == null ||
+                        !Utils.isSameDay(currentMillis, nextMillis);
+                    Chat chat = chats[index];
+                    bool isSelf = chat.sender.id == _currentUserId;
+                    return ChatItemWidget(
+                        chat: chat, showDate: showDate, isSelf: isSelf);
+                  },
+                ),
+              )),
           if (currentChatRoom.blockedBy!.isEmpty)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -370,7 +389,7 @@ class _ChatActivityState extends ConsumerState<ChatActivity> {
                     icon: const Icon(Icons.add, color: Colors.blue),
                     onPressed: () {
                       final SelectFiletypeBottomSheet bottomSheet =
-                          SelectFiletypeBottomSheet();
+                      SelectFiletypeBottomSheet();
                       bottomSheet.showBottomSheet(
                           context, "chat", null, null, currentChatRoom, socket);
                     },
@@ -398,10 +417,10 @@ class _ChatActivityState extends ConsumerState<ChatActivity> {
                     padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
                       backgroundColor:
-                          _hasText ? Colors.blue : Colors.blue.withOpacity(0.5),
+                      _hasText ? Colors.blue : Colors.blue.withOpacity(0.5),
                       child: IconButton(
                         icon:
-                            const Icon(Icons.arrow_upward, color: Colors.white),
+                        const Icon(Icons.arrow_upward, color: Colors.white),
                         onPressed: () {
                           _sendMessage(_messageController.text);
                         },
