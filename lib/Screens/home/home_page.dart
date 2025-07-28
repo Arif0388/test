@@ -3411,7 +3411,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 color: Color(0xFF3872DC),
                 fontWeight: FontWeight.bold,
               ),
