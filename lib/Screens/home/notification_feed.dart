@@ -163,15 +163,15 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:const Color(0xffF9FAFB),
       appBar:AppBar(
+        backgroundColor: const Color.fromARGB(255, 211, 232, 255),
         title:Text('notification',style:GoogleFonts.poppins(fontWeight:FontWeight.w500,fontSize:20)),
         actions: [
-          Switch(value:isNotification, onChanged:(value){
-            setState(() {
-              isNotification = value;
-            });
-          }),
+          // Switch(value:isNotification, onChanged:(value){
+          //   setState(() {
+          //     isNotification = value;
+          //   });
+          // }),
           IconButton(onPressed:(){
             modalBottomSheet(context: context);
           }, icon:const Icon(Icons.more_vert_outlined)),

@@ -338,6 +338,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/provider/fest_provider.dart';
+import '../event/event_fragment_page.dart';
+import 'bottom_sheet_fest_info.dart';
+import 'fest_about_fragment.dart';
 
 class CollegeFestActivity extends ConsumerStatefulWidget {
   final String id;
@@ -395,16 +398,52 @@ class _CollegeFestActivityState extends ConsumerState<CollegeFestActivity> {
       context.go("/error");
     }
   }
+
   @override
   Widget build(BuildContext context) {
+
+    final festData = ref.watch(selectedFestProvider(widget.id));
+    setState(() {
+      isAdmin = festData.admin.any((item) => item.id == _currentUserId);
+    });
+    // final List<Widget> fragments = [
+    //   EventFragmentPage(
+    //     query: isAdmin
+    //         ? "?festival=${widget.id}"
+    //         : "?festival=${widget.id}&stepsDone=6",
+    //     page: _buildInfoSection(festData),
+    //   ),
+    //   FestAboutFragment(
+    //     fest: festData,
+    //     page: _buildInfoSection(festData),
+    //   ),
+    // ];
+    final List<Widget> appBarActions = [
+      if (!isAuthenticated)
+        OutlinedButton(
+            onPressed: () {
+              context.go("/apps");
+            },
+            child: const Text("Sign In")),
+      if (isAuthenticated)
+        IconButton(
+          icon: const Icon(Icons.more_horiz),
+          onPressed: () {
+            final BottomSheetFestInfo sheetFestInfo = BottomSheetFestInfo();
+            sheetFestInfo.showBottomSheet(
+                context, festData, isAdmin);
+          },
+        ),
+      const SizedBox(
+        width: 8,
+      )
+    ];
     return Scaffold(
-      backgroundColor:const Color(0xffF9FAFB),
       appBar:AppBar(
+        backgroundColor: const Color.fromARGB(255, 211, 232, 255),
         leading:IconButton(onPressed:(){}, icon:const Icon(Icons.arrow_back_ios_rounded,color:Color(0xff585858),)),
         title: Text('UDBHAV',style:GoogleFonts.nunito(fontWeight:FontWeight.w700,color:const Color(0xff3C393C))),
-        actions:[
-          IconButton(onPressed: (){}, icon:const Icon(Icons.more_horiz)),
-        ],
+        actions:appBarActions
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -182,14 +182,12 @@ class _AboutClubScreenState extends ConsumerState<AboutClubScreen> {
           leading:IconButton(onPressed:(){
             Navigator.pop(context);
           }, icon:const Icon(Icons.arrow_back_ios_new_rounded,color:Color(0xff000000),size:20,)),
-    title: Text("Club Details", style: GoogleFonts.inter(fontSize:18,fontWeight: FontWeight.w400)),
+    title: Text(clubData.clubName, style: GoogleFonts.inter(fontSize:18,fontWeight: FontWeight.w400)),
     centerTitle: true,
     elevation: 0,
     backgroundColor: Colors.white,
     foregroundColor: Colors.black,
-    actions: [
-    IconButton(onPressed:(){}, icon:const Icon(Icons.share_outlined))
-    ],
+            actions: _buildAppBarActions(context, clubData),
     ),);
 
       //   Scaffold(
@@ -212,14 +210,12 @@ class _AboutClubScreenState extends ConsumerState<AboutClubScreen> {
             backgroundColor:const Color(0xffF9FAFB),
           appBar: AppBar(
           leading:IconButton(onPressed:(){}, icon:const Icon(Icons.arrow_back_ios_new_rounded,color:Color(0xff000000),size:20,)),
-          title: Text("Club Details", style: GoogleFonts.inter(fontSize:18,fontWeight: FontWeight.w400)),
+          title: Text(clubData.clubName, style: GoogleFonts.inter(fontSize:18,fontWeight: FontWeight.w400)),
           centerTitle: true,
             elevation: 0,
          backgroundColor: Colors.white,
          foregroundColor: Colors.black,
-         actions: [
-         IconButton(onPressed:(){}, icon:const Icon(Icons.share_outlined))
-    ],
+            actions: _buildAppBarActions(context, clubData),
     ),
           body: fragments[_selectedFragmentIndex]
       );

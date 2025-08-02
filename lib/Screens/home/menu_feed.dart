@@ -110,6 +110,15 @@ class _MenuFeedState extends ConsumerState<MenuFeed> {
     );
 
     return Scaffold(
+      appBar:AppBar(
+        actions: const [
+          Icon(Icons.search_rounded, color: Color(0xff3C393C)),
+          SizedBox(width: 10),
+          Icon(Icons.notifications, color: Color(0xff3C393C)),
+          SizedBox(width: 10),
+          Icon(Icons.more_vert_outlined, color: Color(0xff3C393C)),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(

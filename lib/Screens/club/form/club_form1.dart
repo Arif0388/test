@@ -391,6 +391,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:learningx_flutter_app/Screens/club/form/set_up_channels.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/common/image_cropper.dart';
 import '../../../api/model/club_model.dart';
@@ -413,7 +414,7 @@ class ClubForm1Activity extends ConsumerStatefulWidget {
 
 class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
   final formKey = GlobalKey<FormState>();
-  final String _selectedCategory = 'Arts & Culture';
+   String? _selectedCategory = 'Arts & Culture';
   final List<String> _categories = [
     'Arts & Culture',
     'Management',
@@ -465,65 +466,154 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
     }
   }
 
+  // void nextBtnClicked() async {
+  //   if (titleController.text.isEmpty || descriptionController.text.isEmpty || linkController.text.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("* field is required!")),
+  //     );
+  //   } else {
+  //     Map<String, dynamic> data = HashMap();
+  //     if (_image != null) {
+  //       List<UploadedFileModel> results = await UploadFileProvider.uploadImage(
+  //           _selectedFile!.name, [_image!], true);
+  //       data['clubImg'] = results[0].location;
+  //     }
+  //     data['clubName'] = titleController.text;
+  //     data['clubLink'] = linkController.text;
+  //     // data['email'] = emailController.text;
+  //     data['description'] = descriptionController.text;
+  //     data['category'] = _selectedCategory;
+  //     data['privacy'] = privacy;
+  //     if (privacy == "public") {
+  //       data['college'] = _collegeId;
+  //     } else {
+  //       data['college'] = null;
+  //     }
+  //     if (widget.collegeId != null && privacy == "public") {
+  //       data['college_status'] = "verified";
+  //       data['college'] = widget.collegeId;
+  //     }
+  //     if (widget.councilId != null) {
+  //       data['council'] = widget.councilId;
+  //     }
+  //     if (widget.clubId != null) {
+  //       data['_id'] = widget.clubId;
+  //       await ref
+  //           .read(selectedClubProvider(widget.clubId!).notifier)
+  //           .updateClubApi(context, data);
+  //       Navigator.pop(context);
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (context) => ClubForm2Activity(
+  //               clubId: widget.clubId!,
+  //               isNewClub: false,
+  //             )),
+  //       );
+  //     } else {
+  //       data['isAdminChannelRequired'] = isAdminChannelRequired;
+  //       ClubItem newClub = await createClubApi(context, data);
+  //       ref.read(yourClubFeedProvider.notifier).addClub(newClub);
+  //       Navigator.pop(context);
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (context) => SetUpChannelsPage(
+  //               clubItem: newClub,
+  //             )),
+  //       );
+  //     }
+  //   }
+  // }
+
   void nextBtnClicked() async {
-    if (titleController.text.isEmpty || descriptionController.text.isEmpty || linkController.text.isEmpty) {
+    // Validate empty fields
+    if (titleController.text.isEmpty ||
+        descriptionController.text.isEmpty ||
+        linkController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("* field is required!")),
+        const SnackBar(content: Text("* All fields are required!")),
       );
-    } else {
-      Map<String, dynamic> data = HashMap();
-      if (_image != null) {
+      return;
+    }
+
+    try {
+      Map<String, dynamic> data = {};
+
+      // Upload image if selected
+      if (_image != null && _selectedFile != null) {
         List<UploadedFileModel> results = await UploadFileProvider.uploadImage(
-            _selectedFile!.name, [_image!], true);
+          _selectedFile!.name,
+          [_image!],
+          true,
+        );
         data['clubImg'] = results[0].location;
       }
-      data['clubName'] = titleController.text;
-      data['clubLink'] = linkController.text;
-      // data['email'] = emailController.text;
-      data['description'] = descriptionController.text;
+
+      // Basic form data
+      data['clubName'] = titleController.text.trim();
+      data['clubLink'] = linkController.text.trim();
+      data['description'] = descriptionController.text.trim();
       data['category'] = _selectedCategory;
       data['privacy'] = privacy;
+
+      // College related logic
       if (privacy == "public") {
-        data['college'] = _collegeId;
+        data['college'] = widget.collegeId ?? _collegeId;
+        if (widget.collegeId != null) {
+          data['college_status'] = "verified";
+        }
       } else {
         data['college'] = null;
       }
-      if (widget.collegeId != null && privacy == "public") {
-        data['college_status'] = "verified";
-        data['college'] = widget.collegeId;
-      }
+
+      // Council check
       if (widget.councilId != null) {
         data['council'] = widget.councilId;
       }
+
+      // If editing existing club
       if (widget.clubId != null) {
         data['_id'] = widget.clubId;
+
         await ref
             .read(selectedClubProvider(widget.clubId!).notifier)
             .updateClubApi(context, data);
+
         Navigator.pop(context);
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ClubForm2Activity(
-                clubId: widget.clubId!,
-                isNewClub: false,
-              )),
-        );
-      } else {
-        data['isAdminChannelRequired'] = isAdminChannelRequired;
-        ClubItem newClub = await createClubApi(context, data);
-        ref.read(yourClubFeedProvider.notifier).addClub(newClub);
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => SetUpChannelsPage(
-                clubItem: newClub,
-              )),
+            builder: (context) => ClubForm2Activity(
+              clubId: widget.clubId!,
+              isNewClub: false,
+            ),
+          ),
         );
       }
+      // If creating new club
+      else {
+        data['isAdminChannelRequired'] = isAdminChannelRequired;
+
+        ClubItem newClub = await createClubApi(context, data);
+        ref.read(yourClubFeedProvider.notifier).addClub(newClub);
+
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SetUpChannelsPage(clubItem: newClub),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error in nextBtnClicked: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Something went wrong. Please try again.")),
+      );
     }
   }
+
 
   void submitForm() {
     if (formKey.currentState!.validate()) {
@@ -548,13 +638,69 @@ class _ClubForm1State extends ConsumerState<ClubForm1Activity> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
+    if (widget.clubId != null) {
+      _initialize();
+    }
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    linkController.dispose();
+    // emailController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initialize() async {
+    await ref
+        .read(selectedClubProvider(widget.clubId!).notifier)
+        .fetchClub(widget.clubId!);
+    if (widget.clubId != null) {
+      final clubData = ref.watch(selectedClubProvider(widget.clubId!));
+      setState(() {
+        titleController.text = clubData.clubName;
+        // councilController.text = clubData.councilName;
+        // emailController.text = clubData.email;
+        descriptionController.text = clubData.description;
+        privacy = clubData.privacy;
+        _selectedCategory = clubData.category;
+        clubImg = clubData.clubImg;
+      });
+    }
+  }
+
+  _loadCurrentUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _collegeId = prefs.getString('college') ?? "";
+    });
+  }
+
+
+  void onPrivacyRadioClicked(String? value) {
+    setState(() {
+      privacy = value ?? "private";
+    });
+  }
+
+  void onChannelRadioClicked(bool? isSelected) {
+    setState(() {
+      isAdminChannelRequired = isSelected ?? false;
+    });
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:const Color(0xffF9FAFB),
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 211, 232, 255),
         title: Text("Create Club Workshop", style: GoogleFonts.poppins(fontWeight: FontWeight.w500,color:const Color(0xff3C393C))),
         leading: const BackButton(),
-        backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,
       ),

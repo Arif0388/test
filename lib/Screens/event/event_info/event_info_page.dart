@@ -983,7 +983,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -997,8 +996,10 @@ import '../../../api/provider/event_feed_provider.dart';
 import '../../../api/provider/event_manage_provider.dart';
 import '../../../api/provider/event_provider.dart';
 import '../../common/qr_creator.dart';
+import '../../common/unauth_alert_dialog.dart';
 import '../comment/event_comment_page.dart';
 import '../event_info/bottom_sheet_event_info.dart';
+import '../event_ticket.dart';
 import '../registration_form.dart';
 
 class EventInfoActivity extends ConsumerStatefulWidget {
@@ -1233,13 +1234,10 @@ class _EventInfoActivity extends ConsumerState<EventInfoActivity> {
         }
 
         return Scaffold(
-          backgroundColor:const Color(0xffF9FAFB),
           appBar:AppBar(
+            backgroundColor: const Color.fromARGB(255, 211, 232, 255),
             title:Text(eventData.eventTitle,style:GoogleFonts.poppins(fontSize:17),),
-            actions: [
-              IconButton(onPressed:(){}, icon:const Icon(Icons.share)),
-              IconButton(onPressed:(){}, icon:const Icon(Icons.favorite_outline,)),
-            ],
+            actions: appBarActions,
           ),
           body:SingleChildScrollView(
             scrollDirection:Axis.vertical,
@@ -1501,7 +1499,7 @@ class _EventInfoActivity extends ConsumerState<EventInfoActivity> {
                       const SizedBox(height: 12),
                       ...rules.map(
                             (rule) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.only(bottom:8),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1550,9 +1548,9 @@ class _EventInfoActivity extends ConsumerState<EventInfoActivity> {
                               icon: Icons.emoji_events,
                               title: "First Prize",
                               amount: "INR 15000 + Internship",
-                              backgroundColor:Color(0xFFFFF8E1),
-                              backgroundColor2: Color(0xFFFBBF24),
-                              iconBgcolor:Color(0xffFBBF24),
+                              backgroundColor:const Color(0xFFFFF8E1),
+                              backgroundColor2: const Color(0xFFFBBF24),
+                              iconBgcolor:const Color(0xffFBBF24),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -1655,7 +1653,7 @@ class _EventInfoActivity extends ConsumerState<EventInfoActivity> {
                             height:45,
                             decoration:BoxDecoration(
                                 borderRadius:BorderRadius.circular(18),
-                                color:Color(0xffDBEAFE)
+                                color:const Color(0xffDBEAFE)
                             ),
                             child: const Icon(Icons.mail,color:Color(0xff4F46E5),)),
                         title:Text('Email',style:GoogleFonts.nunito(fontWeight:FontWeight.w600,fontSize:18)),
@@ -1667,79 +1665,82 @@ class _EventInfoActivity extends ConsumerState<EventInfoActivity> {
               ],
             ),
           ),
-          bottomNavigationBar:isReistrationOpen?
-          Row(
-            mainAxisAlignment:MainAxisAlignment.spaceEvenly,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: SizedBox(
-                  width:MediaQuery.of(context).size.width/1.3,
-                  height:55,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      backgroundColor:Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-
-                    },
-                    child:  Text(
-                      "Register Now",
-                        style:GoogleFonts.nunito(fontWeight:FontWeight.w700,fontSize:20,color:Colors.white)
-                    )
-                    ),
-                ),
-                ),
-              Container(
-                  width:50,
-                  height:50,
-                  decoration:BoxDecoration(
-                    borderRadius:BorderRadius.circular(10),
-                    color:Colors.blueGrey,
+          bottomNavigationBar: Visibility(
+            visible: eventData.takeRegistration,
+            child: Container(
+              // color: const Color.fromARGB(255, 225, 232, 243),
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const SizedBox(
+                    width: 8,
                   ),
-                  child: const Center(child: Icon(Icons.message,color:Colors.white ,))),
-            ],
-          ) :
-          Row(
-            mainAxisAlignment:MainAxisAlignment.spaceEvenly,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width:MediaQuery.of(context).size.width/1.3,
-                  height:50,
-                  child: ElevatedButton(
+                  Expanded(
+                    flex: 4,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (!isRegistered && isReistrationOpen) {
+                          handleRegisterBtn();
+                        }
+                        if (!isAuthenticated) {
+                          AuthDialog.showUnauthDialog(context);
+                        }
+                        if (isRegistered && registeredTeam == null) {
+                          _refresh();
+                        }
+                        if (isRegistered && registeredTeam != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventTicket(
+                                    event: eventData, team: registeredTeam!)),
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: const Color(0xffAFAFAF),
+                        padding: const EdgeInsets.all(15),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
-                      onPressed: () {
-
-                      },
-                      child:  Text(
-                          "Register Closed",
-                          style:GoogleFonts.nunito(fontWeight:FontWeight.w700,fontSize:18,color:const Color(0xffFEFEFE))
-                      )
+                      child: Text(
+                        !isAuthenticated
+                            ? 'Sign In to Register'
+                            : isRegistered
+                            ? 'Get Ticket'
+                            : isReistrationOpen
+                            ? 'Register Event'
+                            : 'Registration Closed',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  IconButton.outlined(
+                    onPressed: () {
+                      if (isAuthenticated) {
+                        handleEventChat();
+                      } else {
+                        AuthDialog.showUnauthDialog(context);
+                      }
+                    },
+                    icon: const Icon(Icons.comment_outlined),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.all(12  ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                ],
               ),
-              Container(
-                  width:50,
-                  height:50,
-                 decoration:BoxDecoration(
-                   borderRadius:BorderRadius.circular(10),
-                   color:Colors.blueGrey,
-                 ),
-                  child: const Center(child: Icon(Icons.message,color:Colors.white,))),
-            ],
-          ) ,
+            ),
+          ),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
