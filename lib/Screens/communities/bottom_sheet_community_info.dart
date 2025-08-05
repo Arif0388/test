@@ -10,8 +10,8 @@ class BottomSheetCommunityInfo {
   void showBottomSheet(
       BuildContext context, Community community, bool isAdmin) {
     void shareText() {
-      String text =
-          "to discover clubs and events of the council ${community.title} !\n\n https://clubchat.live/council/${community.id}";
+      String text = "to discover clubs and events of the council ${community.title} !\n\n https://clubchat.live/council";
+      // String text = "to discover clubs and events of the council ${community.title} !\n\n https://clubchat.live/council/${community.id}";
       Navigator.push(
         context,
         MaterialPageRoute(

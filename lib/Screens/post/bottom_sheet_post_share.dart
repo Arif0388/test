@@ -7,8 +7,8 @@ import 'package:share_plus/share_plus.dart';
 class BottomSheetPostShare {
   void showBottomSheet(BuildContext context, Post post, String currentUserId) {
     void shareText() {
-      String text =
-          "Hey there, you can use the link below to view the post !\n\n https://clubchat.live/posts/${post.id}";
+      String text = "Hey there, you can use the link below to view the post !\n\n https://clubchat.live/posts";
+      // String text = "Hey there, you can use the link below to view the post !\n\n https://clubchat.live/posts/${post.id}";
       Share.share(text);
     }
 

@@ -1,3 +1,4 @@
+
 // ignore_for_file: use_build_context_synchronously, non_constant_identifier_names
 import 'dart:io';
 import 'dart:ui';
@@ -15,6 +16,7 @@ import 'package:learningx_flutter_app/Screens/extra/setting_privacy.dart';
 import 'package:learningx_flutter_app/Screens/home/club_feed.dart';
 import 'package:learningx_flutter_app/Screens/home/empty_college_selected.dart';
 import 'package:learningx_flutter_app/Screens/home/event_tab_feed.dart';
+import 'package:learningx_flutter_app/Screens/profile/profile_page.dart';
 import 'package:learningx_flutter_app/api/common/launch_url.dart';
 import 'package:learningx_flutter_app/api/fcm/notification.dart';
 import 'package:learningx_flutter_app/api/model/college_model.dart';
@@ -31,7 +33,6 @@ import '../club/form/club_form2.dart';
 import '../club/form/club_form3.dart';
 import '../event/form/event_form_page.dart';
 import '../fest/fest_form.dart';
-import '../profile/profile_page.dart';
 
 class MyHomePage extends ConsumerStatefulWidget {
   final int? index;
@@ -163,7 +164,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   // Profile page widget
   Widget _buildProfilePage() {
-    return const ProfileActivity(id: '',);
+    return const ProfileActivity(id:'');
   }
 
   @override
@@ -386,6 +387,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        shape:const CircleBorder(),
         onPressed: handleFloatingActionButton,
         backgroundColor: const Color.fromARGB(255, 56, 114, 220),
         child: const Icon(
@@ -533,117 +535,126 @@ class GlassDialogContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.85,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withOpacity(0.25),
-                  Colors.white.withOpacity(0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.white.withOpacity(0.05),
-                  blurRadius: 30,
-                  offset: const Offset(0, 15),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.emoji_objects_rounded, size: 50, color: Colors.amberAccent),
-                const SizedBox(height: 12),
-                const Text(
-                  'Start Something New',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
+      child: Center(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.85,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3), // <- Whiter glass background
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.white.withOpacity(0.4)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
-                ),
-                const SizedBox(height: 24),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.emoji_objects_rounded, size: 48, color: Colors.amber),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Start Something New',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
 
-                /// Grid Layout for 4 Options
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1.3,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    buildEventOption(
-                      icon: Icons.account_tree_outlined,
-                      iconColor: Colors.cyanAccent,
-                      label: 'Club',
-                      onTap: () => _showClubOptions(context),
-                    ),
-                    buildEventOption(
-                      icon: Icons.build_circle_outlined,
-                      iconColor: Colors.blueAccent,
-                      label: 'Club Workshop',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const ClubForm1Activity()),
-                        );
-                      },
-                    ),
-                    buildEventOption(
-                      icon: Icons.mic_external_on_rounded,
-                      iconColor: Colors.deepOrangeAccent,
-                      label: 'Host Event',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const EventFormPage(formData: {})),
-                        );
-                      },
-                    ),
-                    buildEventOption(
-                      icon: Icons.celebration_outlined,
-                      iconColor: Colors.purpleAccent,
-                      label: 'Launch Fest',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const FestFormActivity(collegeId: '')),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                  // Responsive Grid
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      double itemWidth = (constraints.maxWidth - 16) / 2;
+                      return Wrap(
+                        spacing: 16,
+                        runSpacing: 16,
+                        children: [
+                          SizedBox(
+                            width: itemWidth,
+                            child: buildEventOption(
+                              icon: Icons.account_tree_outlined,
+                              iconColor: Colors.cyan,
+                              label: 'Club',
+                              onTap: () => _showClubOptions(context),
+                            ),
+                          ),
+                          SizedBox(
+                            width: itemWidth,
+                            child: buildEventOption(
+                              icon: Icons.build_circle_outlined,
+                              iconColor: Colors.blue,
+                              label: 'Workshop',
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const ClubForm1Activity()),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: itemWidth,
+                            child: buildEventOption(
+                              icon: Icons.mic_external_on_rounded,
+                              iconColor: Colors.deepOrange,
+                              label: 'Event',
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const EventFormPage(formData: {})),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: itemWidth,
+                            child: buildEventOption(
+                              icon: Icons.celebration_outlined,
+                              iconColor: Colors.purple,
+                              label: 'Fest',
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const FestFormActivity(collegeId: '')),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                FloatingActionButton(
-                  mini: true,
-                  backgroundColor: Colors.redAccent,
-                  onPressed: () => Navigator.pop(context),
-                  child: const Icon(Icons.close, color: Colors.white),
-                ),
-              ],
+                  FloatingActionButton(
+                    mini: true,
+                    backgroundColor: Colors.redAccent,
+                    onPressed: () => Navigator.pop(context),
+                    child: const Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+
   Widget buildEventOption({
     required IconData icon,
     required String label,
@@ -663,12 +674,12 @@ class GlassDialogContent extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, color: iconColor, size: 28),
-            const SizedBox(width: 16),
+            const SizedBox(width: 10),
             Text(
               label,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 16.5,
+                fontSize:13.5,
                 fontWeight: FontWeight.w600,
               ),
             ),

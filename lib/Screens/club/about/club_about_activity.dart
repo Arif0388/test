@@ -128,8 +128,8 @@ class _AboutClubScreenState extends ConsumerState<AboutClubScreen> {
   }
 
   void shareText(Club clubItem) {
-    String text =
-        "to join our club !\n\n https://clubchat.live/club/about/${clubItem.id}";
+    String text = "to join our club !\n\n https://clubchat.live/club/about";
+    // String text = "to join our club !\n\n https://clubchat.live/club/about/${clubItem.id}";
     Navigator.push(
       context,
       MaterialPageRoute(

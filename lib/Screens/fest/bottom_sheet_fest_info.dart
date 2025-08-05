@@ -11,8 +11,8 @@ import 'package:learningx_flutter_app/api/provider/fest_provider.dart';
 class BottomSheetFestInfo {
   void showBottomSheet(BuildContext context, Fest fest, bool isAdmin) {
     void shareText() {
-      String text =
-          "to see the details of events hosted by ${fest.festName} !\n\n https://clubchat.live/club/fest/${fest.id}";
+      String text = "to see the details of events hosted by ${fest.festName} !\n\n https://clubchat.live/club/fest";
+      // String text = "to see the details of events hosted by ${fest.festName} !\n\n https://clubchat.live/club/fest/${fest.id}";
       Navigator.push(
         context,
         MaterialPageRoute(

@@ -17,8 +17,8 @@ class BottomSheetCollegeInfo {
         context: context,
         builder: (BuildContext context) {
           void shareText() {
-            String text =
-                "to discover clubs and events of the campus ${college.collegeName} !\n\n https://clubchat.live/college/${college.id}";
+            String text = "to discover clubs and events of the campus ${college.collegeName} !\n\n https://clubchat.live/college";
+            // String text = "to discover clubs and events of the campus ${college.collegeName} !\n\n https://clubchat.live/college/${college.id}";
             Navigator.push(
               context,
               MaterialPageRoute(

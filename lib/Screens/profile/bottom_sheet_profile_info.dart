@@ -14,8 +14,8 @@ class BottomSheetProfileInfo {
       bool isBlocked,
       void Function(Map<String, dynamic>) refreshCurrentProfile) {
     void shareText() {
-      String text =
-          "to view the profile !\n\n https://clubchat.live/profile/$userId";
+      String text = "to view the profile !\n\n https://clubchat.live/profile";
+      // String text = "to view the profile !\n\n https://clubchat.live/profile/$userId";
       Navigator.push(
         context,
         MaterialPageRoute(

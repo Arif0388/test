@@ -13,8 +13,8 @@ class BottomSheetClubItem {
   void showBottomSheet(BuildContext context, ClubItem club, bool isAdmin,
       String currentUserId, void Function(String) onRemoveClub) {
     void shareText() {
-      String text =
-          "to join our club !\n\n https://clubchat.live/club/about/${club.id}";
+      String text = "to join our club !\n\n https://clubchat.live/club/about";
+      // String text = "to join our club !\n\n https://clubchat.live/club/about/${club.id}";
       Navigator.push(
         context,
         MaterialPageRoute(

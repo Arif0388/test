@@ -1,93 +1,10 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:learningx_flutter_app/Screens/notifications/notification_item.dart';
-// import 'package:learningx_flutter_app/api/model/notification_model.dart';
-// import 'package:learningx_flutter_app/api/provider/notification_provider.dart';
-//
-// class NotificationScreen extends ConsumerStatefulWidget {
-//   const NotificationScreen({super.key});
-//
-//   @override
-//   ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
-// }
-//
-// class _NotificationScreenState extends ConsumerState<NotificationScreen> {
-//   final ScrollController _scrollController = ScrollController();
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     markReadNotificationApi();
-//     _scrollController.addListener(_scrollListener);
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       _refresh();
-//     });
-//   }
-//
-//   @override
-//   void dispose() {
-//     _scrollController.dispose();
-//     super.dispose();
-//   }
-//
-//   void _scrollListener() {
-//     if (_scrollController.position.pixels >=
-//         _scrollController.position.maxScrollExtent - 200) {
-//       ref.read(notificationProvider.notifier).fetchNotifications();
-//     }
-//   }
-//
-//   Future<void> _refresh() async {
-//     ref.read(notificationProvider.notifier).refreshNotifications();
-//   }
-//
-//   void handleRemoveItem(String id) {
-//     ref.read(notificationProvider.notifier).removeNotification(id);
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final notifications = ref.watch(notificationProvider);
-//     final isLoading = ref.watch(
-//         notificationProvider.notifier.select((state) => state.isLoading));
-//
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Notifications"),
-//         backgroundColor: const Color.fromARGB(255, 211, 232, 255),
-//         titleTextStyle: const TextStyle(color: Colors.black, fontSize: 18),
-//         elevation: 0,
-//       ),
-//       body: Center(
-//         child: isLoading
-//             ? const CircularProgressIndicator()
-//             : notifications.isEmpty
-//                 ? const Text('No notifications available')
-//                 : ListView.builder(
-//                     key: const PageStorageKey<String>('notificationList'),
-//                     controller: _scrollController,
-//                     itemCount: notifications.length + (isLoading ? 1 : 0),
-//                     itemBuilder: (context, index) {
-//                       if (index == notifications.length) {
-//                         return const Padding(
-//                           padding: EdgeInsets.symmetric(vertical: 10),
-//                           child: Center(child: CircularProgressIndicator()),
-//                         );
-//                       }
-//                       NotificationModel notification = notifications[index];
-//                       return NotificationItemWidget(
-//                           item: notification, onRemoveItem: handleRemoveItem);
-//                     },
-//                   ),
-//       ),
-//     );
-//   }
-// }
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+
+import '../../api/provider/notification_provider.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
@@ -160,8 +77,45 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   n["time"].isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
       n["time"].isAfter(DateTime.now().subtract(const Duration(days: 7))))
       .toList();
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    markReadNotificationApi();
+    _scrollController.addListener(_scrollListener);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refresh();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(notificationProvider.notifier).fetchNotifications();
+    }
+  }
+
+  Future<void> _refresh() async {
+    ref.read(notificationProvider.notifier).refreshNotifications();
+  }
+
+  void handleRemoveItem(String id) {
+    ref.read(notificationProvider.notifier).removeNotification(id);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final notifications = ref.watch(notificationProvider);
+    final isLoading = ref.watch(
+        notificationProvider.notifier.select((state) => state.isLoading));
     return Scaffold(
       appBar:AppBar(
         backgroundColor: const Color.fromARGB(255, 211, 232, 255),

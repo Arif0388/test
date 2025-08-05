@@ -24,8 +24,8 @@ class BottomSheetClubInfo {
       void Function(String) onDeleteClub,
       Future<void> Function(Map<String, dynamic>) onUpdateClub) {
     void shareText() {
-      String text =
-          "to join our club !\n\n https://clubchat.live/club/about/${clubItem.id}";
+      String text = "to join our club !\n\n https://clubchat.live/club/about";
+      // String text = "to join our club !\n\n https://clubchat.live/club/about/${clubItem.id}";
       Navigator.push(
         context,
         MaterialPageRoute(
